@@ -18,7 +18,7 @@ namespace NZWalks.API.Controllers
             this.dbContext = dbContext;
         }
 
-        // GET ALL REGIONS
+        // GET - ALL REGIONS
         // GET: https://localhost:{port}/api/regions
         [HttpGet]
         public IActionResult GetAll() 
@@ -43,7 +43,7 @@ namespace NZWalks.API.Controllers
             return Ok(regionsDto);
         }
 
-        // GET SINGLE REGION (Get Region by ID)
+        // GET - SINGLE REGION (Get Region by ID)
         // GET: https://localhost:{port}/api/regions/{id}
         [HttpGet]
         [Route("{id:Guid}")] // tells EF to map url variable to action method parameter
@@ -71,6 +71,36 @@ namespace NZWalks.API.Controllers
 
             // Exposing the DTO instead of the Domain Model
             return Ok(regionDto);
+        }
+
+        // POST - CREATE NEW REGION
+        // POST: https://localhost:{port}/api/regions
+        [HttpPost]
+        public IActionResult Create([FromBody] AddRegionRequestDto addRegionRequestDto)
+        {
+            // Map/convert DTO to Domain Model
+            var regionDomainModel = new Region
+            {
+                Code = addRegionRequestDto.Code,
+                Name = addRegionRequestDto.Name,
+                RegionImageUrl = addRegionRequestDto.RegionImageUrl
+            };
+
+            // Use Domain Model to create Region
+            dbContext.Regions.Add(regionDomainModel);
+            dbContext.SaveChanges();
+
+            // Map Domain Model back to DTO
+            var regionDto = new RegionDto
+            {
+                Id = regionDomainModel.Id,
+                Code = regionDomainModel.Code,
+                Name = regionDomainModel.Name,
+                RegionImageUrl = regionDomainModel.RegionImageUrl
+            };
+
+            // Use that DTO as part of the return body so the client knows what was created
+            return CreatedAtAction(nameof(GetById), new { id = regionDto.Id }, regionDto);
         }
     }
 }

@@ -99,8 +99,43 @@ namespace NZWalks.API.Controllers
                 RegionImageUrl = regionDomainModel.RegionImageUrl
             };
 
-            // Use that DTO as part of the return body so the client knows what was created
+            // For a successful HTTP POST request, the server needs to return a "201 Created"
+            // response. Along with the resource that was created in the reponse body
+            // (we'll use that DTO version of the resource as the return value)
             return CreatedAtAction(nameof(GetById), new { id = regionDto.Id }, regionDto);
+        }
+
+        // PUT - UPDATE REGION
+        // PUT: https://localhost:{port}/api/regions/{id}
+        [HttpPut]
+        [Route("{id:Guid}")]
+        public IActionResult Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
+        {
+            // First check if this region id even exists
+            var regionDomainModel = dbContext.Regions.FirstOrDefault(x => x.Id == id);
+            
+            if (regionDomainModel == null)
+            {
+                return NotFound();
+            }
+
+            // Map changes to Domain Model based on the client DTO
+            regionDomainModel.Code = updateRegionRequestDto.Code;
+            regionDomainModel.Name = updateRegionRequestDto.Name;
+            regionDomainModel.RegionImageUrl = updateRegionRequestDto.RegionImageUrl;
+            
+            dbContext.SaveChanges();
+
+            // Convert the updated Domain Model to DTO
+            var regionDto = new RegionDto
+            {
+                Id = regionDomainModel.Id,
+                Code = regionDomainModel.Code,
+                Name = regionDomainModel.Name,
+                RegionImageUrl = regionDomainModel.RegionImageUrl
+            };
+            
+            return Ok(regionDto);
         }
     }
 }

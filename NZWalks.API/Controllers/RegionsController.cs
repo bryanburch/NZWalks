@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NZWalks.API.CustomActionFilters;
 using NZWalks.API.Data;
 using NZWalks.API.Models.Domain;
 using NZWalks.API.Models.DTO;
@@ -80,8 +81,20 @@ namespace NZWalks.API.Controllers
         // POST - CREATE NEW REGION
         // POST: https://localhost:{port}/api/regions
         [HttpPost]
+        [ValidateModel]
         public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
+            // Before doing anything we'll check if the data the client gave us
+            // adheres to the validations (i.e. data annotations for AddRegionRequestDto)
+            // we put on the DTO
+            // However, a cleaner way to do the below is to create a Custom Action Filter
+            // for decorating the action method and put it in there
+            // (see CustomActionFilters\ValidateModelAttribute.cs)
+            //if (!ModelState.IsValid)
+            //{
+            //    return BadRequest(ModelState);
+            //}
+
             // Map DTO to Domain Model
             var regionDomainModel = mapper.Map<Region>(addRegionRequestDto);
 
@@ -102,6 +115,7 @@ namespace NZWalks.API.Controllers
         // PUT: https://localhost:{port}/api/regions/{id}
         [HttpPut]
         [Route("{id:Guid}")]
+        [ValidateModel]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
             // Map DTO to Domain Model

@@ -17,8 +17,9 @@ builder.Services.AddDbContext<NZWalksDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("NZWalksConnectionString"));
 });
 
-// Inject the repository for the Region resource
+// Inject the repositories for the Region and Walk resources
 builder.Services.AddScoped<IRegionRepository, SqlRegionRepository>();
+builder.Services.AddScoped<IWalkRepository, SqlWalkRepository>();
 
 // Inject mappings
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));

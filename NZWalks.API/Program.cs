@@ -26,9 +26,10 @@ builder.Services.AddDbContext<NZWalksAuthDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("NZWalksAuthConnectionString"));
 });
 
-// Inject the repositories for the Region and Walk resources
+// Inject repositories
 builder.Services.AddScoped<IRegionRepository, SqlRegionRepository>();
 builder.Services.AddScoped<IWalkRepository, SqlWalkRepository>();
+builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 
 // Inject mappings
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));

@@ -29,7 +29,7 @@ namespace NZWalks.API.Controllers
         // GET - ALL REGIONS
         // GET: https://localhost:{port}/api/regions
         [HttpGet]
-        [Authorize(Roles = "Reader")]
+        [Authorize(Roles = "Reader,Writer")]
         public async Task<IActionResult> GetAll() 
         {
             // Get data from database (Domain Model)
@@ -61,7 +61,7 @@ namespace NZWalks.API.Controllers
         // GET: https://localhost:{port}/api/regions/{id}
         [HttpGet]
         [Route("{id:Guid}")] // tells EF to map url variable to action method parameter
-        [Authorize(Roles = "Reader")]
+        [Authorize(Roles = "Reader,Writer")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             // The Find() method can only be used to search on ONLY the primary key
@@ -139,7 +139,7 @@ namespace NZWalks.API.Controllers
         // DELETE: https://localhost:{port}/api/regions/{id}
         [HttpDelete]
         [Route("{id:Guid}")]
-        [Authorize(Roles = "Writer,Reader")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             // Check if this id exists

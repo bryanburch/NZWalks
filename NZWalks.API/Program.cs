@@ -8,13 +8,27 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.FileProviders;
+using Serilog;
+using NZWalks.API.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+/* Add services to the container. */
+
+// Config Serilog
+var logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("Logs/NzWalks_Log.txt", rollingInterval: RollingInterval.Day)
+    .MinimumLevel.Warning()
+    .CreateLogger();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(logger);
+
 
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor(); // used for image upload feature
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -48,6 +62,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+
 // Inject dbContexts for databases we'll be using
 builder.Services.AddDbContext<NZWalksDbContext>(options =>
 {
@@ -66,6 +81,7 @@ builder.Services.AddScoped<IImageRepository, LocalImageRepository>();
 
 // Inject mappings
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
+
 
 // Add identity solution
 builder.Services.AddIdentityCore<IdentityUser>()
@@ -101,14 +117,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+/* Configure the HTTP request pipeline. */
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Enable custom exception middleware
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.UseHttpsRedirection();
 

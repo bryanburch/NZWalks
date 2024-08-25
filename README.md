@@ -1,5 +1,5 @@
 # NZWalks
-This is an ASP.NET Core Web API (.NET 8) demo project. There's no UI (besides Swagger) for consuming the API, and is just an exercise in building an API.
+This is an ASP.NET Core Web API (.NET 8) demo project. There's a basic MVC frontend for consuming the API, or you can just use Swagger or Postman instead.
 
 ## Running the project
 Open the project in Visual Studio 2022 and click on the green button labeled "https" to run in debug mode.
